@@ -16,6 +16,7 @@ Incluye:
 - Estrategia **passport-jwt** para rutas protegidas.
 - Sistema de login que genera un **token JWT**.
 - Endpoint `/api/sessions/current` protegido.
+- **Vistas frontend**: login, registro y usuario actual, desarrolladas en HTML y CSS moderno.
 
 ---
  
@@ -27,7 +28,7 @@ Incluye:
 - ![Passport](https://img.shields.io/badge/-Passport.js-34E27A?logo=passport&logoColor=white) **Passport**, **passport-local**, **passport-jwt**
 - 🔒 **bcrypt**, **jsonwebtoken**
 - ⚙️ **dotenv**
-
+- 🎨 **HTML5** y **CSS3** para las vistas de login, registro y usuario actual
 
 ---
 
@@ -37,7 +38,11 @@ Incluye:
 /public
   index.html
   login.html
-  current.html
+  register.html       
+  current.html        
+  users.html
+  css/
+    style.css         
 /src
   config/
   controllers/
@@ -48,6 +53,12 @@ server.js
 README.MD
 package.json
 ```
+
+Las vistas principales incluidas son:
+- **login.html**: formulario de inicio de sesión
+- **register.html**: formulario de registro de usuario
+- **current.html**: muestra los datos del usuario autenticado
+- **users.html**: muestra todos los usuario de la base de datos
 
 ---
 
