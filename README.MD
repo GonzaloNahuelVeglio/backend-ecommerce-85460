@@ -50,7 +50,7 @@ package.json
 ## 📦 Instalación
 
 1. Cloná el repositorio:  
-   `git clone <URL-DE-TU-REPO>`
+   `git clone https://github.com/GonzaloNahuelVeglio/backend-ecommerce-85460`
 
 2. Instalá dependencias:  
    `npm install`
