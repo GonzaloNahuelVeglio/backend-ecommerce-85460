@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👤 Registro - Ecommerce Backend</title>
+    <link rel="stylesheet" href="css/style.css"> 
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="./index.html">🏠 Home</a>
+            <a href="./register.html" class="active">👤 Crear Usuario</a>
+            <a href="./current.html">🔍 Current</a>
+<a href="./users.html">🔍 Ver usuarios</a>
+            <a href="./login.html">🔐 Login</a>
+        </div>
+    </nav>
+
+    <div class="register-wrapper">
+        <div class="register-container">
+            <div class="register-header">
+                <h2>👤 Registrar Usuario</h2>
+                <p>Crea tu cuenta en Ecommerce Backend</p>
+            </div>
+            
+            <div id="alertContainer"></div>
+            
+            <form id="registerForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="first_name">Nombre</label>
+                        <input type="text" id="first_name" placeholder="Tu nombre" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="last_name">Apellido</label>
+                        <input type="text" id="last_name" placeholder="Tu apellido" required>
+                    </div>
+                </div>
+                
+                <div class="form-group full-width">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="tu@email.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="age">Edad</label>
+                    <input type="number" id="age" placeholder="Tu edad" min="18" max="120" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" placeholder="Tu contraseña" required>
+                    <div class="password-strength">
+                        <div class="strength-bar">
+                            <div class="strength-fill" id="strengthBar"></div>
+                        </div>
+                        <span id="strengthText">Ingresa una contraseña</span>
+                    </div>
+                </div>
+                
+                <button type="submit" class="register-button" id="registerButton">
+                    Registrarse
+                </button>
+            </form>
+            
+            <div class="register-footer">
+                <p>¿Ya tienes cuenta? <a href="./login.html">Inicia sesión aquí</a></p>
+                <p><a href="./index.html">← Volver al inicio</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('registerForm');
+        const registerButton = document.getElementById('registerButton');
+        const alertContainer = document.getElementById('alertContainer');
+        const passwordInput = document.getElementById('password');
+        const strengthBar = document.getElementById('strengthBar');
+        const strengthText = document.getElementById('strengthText');
+        
+        // Función para mostrar alertas
+        function showAlert(message, type = 'error') {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            
+            alertContainer.innerHTML = '';
+            alertContainer.appendChild(alertDiv);
+            
+            // Auto-remove alert after 5 seconds
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+        
+        // Función para mostrar estado de carga
+        function setLoading(isLoading) {
+            if (isLoading) {
+                registerButton.classList.add('loading');
+                registerButton.textContent = 'Registrando...';
+                registerButton.disabled = true;
+            } else {
+                registerButton.classList.remove('loading');
+                registerButton.textContent = 'Registrarse';
+                registerButton.disabled = false;
+            }
+        }
+        
+        // Validación de fortaleza de contraseña
+        function checkPasswordStrength(password) {
+            let strength = 0;
+            let text = '';
+            
+            if (password.length >= 8) strength += 1;
+            if (password.match(/[a-z]/)) strength += 1;
+            if (password.match(/[A-Z]/)) strength += 1;
+            if (password.match(/[0-9]/)) strength += 1;
+            if (password.match(/[^A-Za-z0-9]/)) strength += 1;
+            
+            strengthBar.className = 'strength-fill';
+            
+            switch (strength) {
+                case 0:
+                case 1:
+                    strengthBar.classList.add('strength-weak');
+                    text = 'Muy débil';
+                    break;
+                case 2:
+                    strengthBar.classList.add('strength-weak');
+                    text = 'Débil';
+                    break;
+                case 3:
+                    strengthBar.classList.add('strength-medium');
+                    text = 'Moderada';
+                    break;
+                case 4:
+                    strengthBar.classList.add('strength-strong');
+                    text = 'Fuerte';
+                    break;
+                case 5:
+                    strengthBar.classList.add('strength-very-strong');
+                    text = 'Muy fuerte';
+                    break;
+            }
+            
+            strengthText.textContent = text;
+            return strength;
+        }
+        
+        // Event listener para contraseña
+        passwordInput.addEventListener('input', function() {
+            checkPasswordStrength(this.value);
+        });
+        
+        // Validación en tiempo real
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('blur', function() {
+                const formGroup = this.parentElement;
+                
+                if (this.checkValidity()) {
+                    formGroup.classList.add('valid');
+                    formGroup.classList.remove('invalid');
+                } else {
+                    formGroup.classList.add('invalid');
+                    formGroup.classList.remove('valid');
+                }
+            });
+            
+            input.addEventListener('input', function() {
+                const formGroup = this.parentElement;
+                formGroup.classList.remove('valid', 'invalid');
+            });
+        });
+        
+        // Manejo del formulario
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const first_name = document.getElementById('first_name').value.trim();
+            const last_name = document.getElementById('last_name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const age = parseInt(document.getElementById('age').value);
+            const password = document.getElementById('password').value;
+            
+            // Validaciones
+            if (!first_name || !last_name || !email || !age || !password) {
+                showAlert('Por favor, completa todos los campos');
+                return;
+            }
+            
+            if (age < 18) {
+                showAlert('Debes ser mayor de edad para registrarte');
+                return;
+            }
+            
+            if (checkPasswordStrength(password) < 2) {
+                showAlert('La contraseña debe ser más fuerte');
+                return;
+            }
+            
+            setLoading(true);
+            
+            try {
+                const response = await fetch('/api/users', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ first_name, last_name, email, age, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showAlert('✅ Usuario creado correctamente! Redirigiendo al login...', 'success');
+                    form.reset();
+                    strengthBar.className = 'strength-fill';
+                    strengthText.textContent = 'Ingresa una contraseña';
+                    
+                    // Limpiar clases de validación
+                    document.querySelectorAll('.form-group').forEach(group => {
+                        group.classList.remove('valid', 'invalid');
+                    });
+                    
+                    // Redirect to login after success
+                    setTimeout(() => {
+                        window.location.href = '/login.html';
+                    }, 2000);
+                } else {
+                    showAlert(data.message || 'Error al crear el usuario');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('Error de conexión. Intenta nuevamente.');
+            } finally {
+                setLoading(false);
+            }
+        });
+        
+        // Efecto de focus en inputs
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'translateY(-2px)';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body>
+</html>

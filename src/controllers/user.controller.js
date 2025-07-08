@@ -6,22 +6,18 @@ export const createUser = async (req, res) => {
     try {
         const { first_name, last_name, email, age, password } = req.body;
  
-        // Validación básica
-        if (!first_name || !last_name || !email || !age || !password) {
+         if (!first_name || !last_name || !email || !age || !password) {
             return res.status(400).json({ message: 'Faltan campos requeridos.' });
         }
 
-        // Verificar si el email ya existe
-        const userExists = await UserModel.findOne({ email });
+         const userExists = await UserModel.findOne({ email });
         if (userExists) {
             return res.status(409).json({ message: 'El email ya está registrado.' });
         }
 
-        // Encriptar la contraseña
-        const hashedPassword = bcrypt.hashSync(password, 10);
+         const hashedPassword = bcrypt.hashSync(password, 10);
 
-        // Crear el usuario
-        const newUser = new UserModel({
+         const newUser = new UserModel({
             first_name,
             last_name,
             email,
@@ -83,13 +79,11 @@ export const updateUser = async (req, res) => {
         const { uid } = req.params;
         const { first_name, last_name, email, age, password } = req.body;
 
-        // Validación básica
-        if (!first_name || !last_name || !email || !age || !password) {
+         if (!first_name || !last_name || !email || !age || !password) {
             return res.status(400).json({ message: 'Faltan campos requeridos.' });
         }
 
-        // Encriptar la nueva contraseña
-        const hashedPassword = bcrypt.hashSync(password, 10);
+         const hashedPassword = bcrypt.hashSync(password, 10);
 
         if (!mongoose.Types.ObjectId.isValid(uid)) {
             return res.status(400).json({ message: 'ID no válido.' });

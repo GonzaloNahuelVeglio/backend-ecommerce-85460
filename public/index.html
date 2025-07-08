@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📦 Ecommerce Backend — Comisión 85460</title>
+<link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="./index.html">🏠 Home</a>
+      <a href="./register.html">👤 Crear Usuario</a>
+      <a href="./current.html">🔍 Current</a>
+      <a href="./users.html">🔍 Ver usuarios</a>  
+      <a href="./login.html">🔐 Login</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="hero">
+      <h1>📦 Ecommerce Backend</h1>
+      <p><strong>Pre-Entrega N°1 — Backend 2 (Coderhouse)</strong><br>
+      Desarrollado por: <a href="https://www.linkedin.com/in/gonzalo-nahuel-veglio/" target="_blank"><strong>Gonzalo Veglio</strong></a></p>
+    </div>
+
+    <div class="card">
+      <h2>🚀 Descripción</h2>
+      <p>Este proyecto implementa un <strong>CRUD de usuarios</strong> junto con un sistema de <strong>autenticación y autorización</strong> utilizando <strong>Passport</strong> y <strong>JWT</strong>, siguiendo la estructura de un backend para ecommerce.</p>
+      <p>Incluye:</p>
+      <ul>
+        <li>Modelo <code>User</code> con campos requeridos y referencia a <code>Cart</code></li>
+        <li>Contraseña encriptada con <strong>bcrypt</strong></li>
+        <li>Estrategia <strong>passport-local</strong> para login</li>
+        <li>Estrategia <strong>passport-jwt</strong> para rutas protegidas</li>
+        <li>Sistema de login que genera un <strong>token JWT</strong></li>
+        <li>Endpoint <code>/api/sessions/current</code> protegido</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>⚙️ Tecnologías utilizadas</h2>
+      <div class="tech-grid">
+        <div class="tech-item">
+          <img class="badge" src="https://img.shields.io/badge/-Node.js-339933?logo=node.js&logoColor=white" alt="Node.js badge">
+          <strong>Node.js</strong>
+        </div>
+        <div class="tech-item">
+          <img class="badge" src="https://img.shields.io/badge/-Express.js-000000?logo=express&logoColor=white" alt="Express badge">
+          <strong>Express</strong>
+        </div>
+        <div class="tech-item">
+          <img class="badge" src="https://img.shields.io/badge/-MongoDB-47A248?logo=mongodb&logoColor=white" alt="MongoDB badge">
+          <strong>MongoDB + Mongoose</strong>
+        </div>
+        <div class="tech-item">
+          <img class="badge" src="https://img.shields.io/badge/-Passport.js-34E27A?logo=passport&logoColor=white" alt="Passport badge">
+          <strong>Passport.js</strong>
+        </div>
+        <div class="tech-item">
+          <span style="color: var(--accent-color);">🔒</span>
+          <strong>bcrypt, jsonwebtoken</strong>
+        </div>
+        <div class="tech-item">
+          <span style="color: var(--secondary-color);">⚙️</span>
+          <strong>dotenv</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>📁 Estructura del proyecto</h2>
+      <pre><code>/public
+  index.html
+  login.html
+  current.html
+/src
+  config/
+  controllers/
+  models/
+  routes/
+server.js 
+.env
+README.MD
+package.json</code></pre>
+    </div>
+
+    <div class="card">
+      <h2>📦 Instalación</h2>
+      <ol>
+        <li>Cloná el repositorio:<br><code>git clone https://github.com/GonzaloNahuelVeglio/backend-ecommerce-85460</code></li>
+        <li>Instalá dependencias:<br><code>npm install</code></li>
+        <li>Configurá tu archivo <code>.env</code>:
+          <pre><code>MONGO_URI=&lt;TU_URI_DE_MONGO&gt;
+JWT_SECRET=&lt;TU_SECRETO&gt;
+PORT=8080</code></pre>
+        </li>
+        <li>Para correr el servidor:<br><code>npm run dev</code></li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h2>🔑 API Endpoints</h2>
+      
+      <h3>Autenticación</h3>
+      <div class="endpoint">
+        <strong>POST</strong> <code>/api/users</code><br>
+        Crear usuario (registro)<br>
+        Body: <code>{ first_name, last_name, email, age, password }</code>
+      </div>
+      
+      <div class="endpoint">
+        <strong>POST</strong> <code>/api/sessions/login</code><br>
+        Login de usuario<br>
+        Body: <code>{ email, password }</code><br>
+        Respuesta: <code>{ token }</code>
+      </div>
+      
+      <div class="endpoint">
+        <strong>GET</strong> <code>/api/sessions/current</code><br>
+        Obtener usuario actual (requiere JWT)<br>
+        Header: <code>Authorization: Bearer &lt;token&gt;</code>
+      </div>
+
+      <h3>CRUD de usuarios</h3>
+      <div class="endpoint">
+        <strong>GET</strong> <code>/api/users</code><br>
+        Lista todos los usuarios (protegido)
+      </div>
+      
+      <div class="endpoint">
+        <strong>GET</strong> <code>/api/users/:uid</code><br>
+        Obtiene un usuario por ID (no protegido)
+      </div>
+      
+      <div class="endpoint">
+        <strong>PUT</strong> <code>/api/users/:uid</code><br>
+        Actualiza un usuario por ID (protegido)
+      </div>
+      
+      <div class="endpoint">
+        <strong>DELETE</strong> <code>/api/users/:uid</code><br>
+        Elimina un usuario por ID (protegido)
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>⚡ Autor</h2>
+      <p><a href="https://github.com/GonzaloNahuelVeglio" target="_blank">Gonza Veglio</a><br>
+      Comisión 85460 — Backend 2 — Coderhouse</p>
+    </div>
+  </div>
+</body>
+</html>

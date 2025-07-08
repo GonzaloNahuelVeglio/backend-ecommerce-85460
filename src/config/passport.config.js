@@ -8,8 +8,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const iniciarPassport = () => {
-  // Estrategia de login local
-  passport.use("login",
+   passport.use("login",
     new local.Strategy(
       { usernameField: "email" },
       async (username, password, done) => {
@@ -27,8 +26,7 @@ export const iniciarPassport = () => {
     )
   );
 
-  // Estrategia JWT 
-  passport.use("jwt",
+   passport.use("jwt",
     new JwtStrategy(
       {
         jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),

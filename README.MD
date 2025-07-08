@@ -34,12 +34,16 @@ Incluye:
 ## 📁 Estructura base
 
 ```
+/public
+  index.html
+  login.html
+  current.html
 /src
-  /config
-  /controllers
-  /models
-  /routes
-  server.js
+  config/
+  controllers/
+  models/
+  routes/
+server.js 
 .env
 README.MD
 package.json

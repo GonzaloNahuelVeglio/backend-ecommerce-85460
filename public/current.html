@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔍 Usuario Actual - Ecommerce Backend</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="./index.html">🏠 Home</a>
+      <a href="./register.html">👤 Crear Usuario</a>
+      <a href="./current.html" class="active">🔍 Current</a>
+      <a href="./login.html">🔐 Login</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="card">
+      <h1>🔍 Información del Usuario Actual</h1>
+      <p>Visualiza los datos de tu cuenta registrada en el sistema.</p>
+      
+      <div class="user-actions">
+        <button id="getUserBtn" class="user-button">
+          <span class="button-icon">👤</span>
+          <span class="button-text">Obtener Usuario Actual</span>
+        </button>
+      </div>
+      
+      <div class="user-data-container">
+        <pre id="result" class="user-data">Presiona el botón para cargar tus datos...</pre>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('getUserBtn').addEventListener('click', async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        showAlert('No hay token guardado. Por favor inicia sesión primero.', 'error');
+        setTimeout(() => {
+          window.location.href = '/login.html';
+        }, 2000);
+        return;
+      }
+
+      const button = document.getElementById('getUserBtn');
+      button.classList.add('loading');
+      button.innerHTML = '<span class="button-icon">⏳</span><span class="button-text">Cargando...</span>';
+
+      try {
+        const response = await fetch('/api/sessions/current', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        const data = await response.json();
+        
+        if (response.ok) {
+          // Formatear el JSON con colores
+          const formattedData = JSON.stringify(data, null, 2)
+            .replace(/"([^"]+)":/g, '"<span class="json-key">$1</span>":')
+            .replace(/: "([^"]+)"/g, ': "<span class="json-string">$1</span>"')
+            .replace(/: (\d+)/g, ': <span class="json-number">$1</span>')
+            .replace(/: (null|true|false)/g, ': <span class="json-boolean">$1</span>');
+          
+          document.getElementById('result').innerHTML = formattedData;
+          showAlert('Datos cargados correctamente', 'success');
+        } else {
+          showAlert('Error: ' + (data.message || 'No se pudo obtener la información'), 'error');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showAlert('Error de conexión. Intenta nuevamente.', 'error');
+      } finally {
+        button.classList.remove('loading');
+        button.innerHTML = '<span class="button-icon">👤</span><span class="button-text">Obtener Usuario Actual</span>';
+      }
+    });
+
+    // Función para mostrar alertas (similar a login.html)
+    function showAlert(message, type = 'error') {
+      // Crear alerta si no existe el contenedor
+      let alertContainer = document.querySelector('.alert-container');
+      if (!alertContainer) {
+        alertContainer = document.createElement('div');
+        alertContainer.className = 'alert-container';
+        document.querySelector('.card').prepend(alertContainer);
+      }
+      
+      const alertDiv = document.createElement('div');
+      alertDiv.className = `alert alert-${type}`;
+      alertDiv.textContent = message;
+      
+      alertContainer.innerHTML = '';
+      alertContainer.appendChild(alertDiv);
+      
+      setTimeout(() => {
+        alertDiv.remove();
+      }, 5000);
+    }
+  </script>
+</body>
+</html>

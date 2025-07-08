@@ -1,6 +1,5 @@
 export const getCurrent = (req, res) => {
-  // passport-jwt ya te deja req.user listo
-  if (!req.user) {
+   if (!req.user) {
     return res.status(401).json({ message: 'No autorizado.' });
   }
 

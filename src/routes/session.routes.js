@@ -19,8 +19,7 @@ router.post('/login', (req, res, next) => {
   })(req, res, next);
 });
 
-// Ruta protegida de ejemplo:
-router.get('/current', passport.authenticate('jwt', { session: false }), (req, res) => {
+ router.get('/current', passport.authenticate('jwt', { session: false }), (req, res) => {
   res.json({ user: req.user });
 });
 

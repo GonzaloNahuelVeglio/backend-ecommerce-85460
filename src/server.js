@@ -12,19 +12,21 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 
 app.use(express.json());
+app.use(express.static('public'));
 
-// Ejemplo: ruta de prueba
-app.get('/', (req, res) => {
+
+ app.get('/', (req, res) => {
     res.send('Servidor funcionando 👋');
 });
+
+// Conectar a la base de datos
+connectDB();
 
 // Rutas de usuarios
 app.use('/api/users', userRouter);
 // Rutas de sesiones
 app.use('/api/sessions', sessionRouter);
 
-// Conectar a la base de datos
-connectDB();
 
 app.use(passport.initialize());
 
