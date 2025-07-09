@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createUser, getUsers, getUserById,updateUser , deleteUser } from '../controllers/user.controller.js';
+import { createUser, getUsers, getUserById, updateUser, deleteUser } from '../controllers/user.controller.js';
 import passport from "passport";
 
 const router = Router();
@@ -11,7 +11,7 @@ router.post('/', createUser);
 router.get('/', passport.authenticate("jwt", { session: false }), getUsers);
 
 // Ruta para obtener un usuario por ID
-router.get('/:uid', getUserById);
+router.get('/:uid', passport.authenticate("jwt", { session: false }), getUserById);
 
 // Ruta para actualizar un usuario por ID
 router.put('/:uid',  passport.authenticate("jwt", { session: false }), updateUser);

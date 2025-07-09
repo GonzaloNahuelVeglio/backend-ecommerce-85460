@@ -1231,3 +1231,18 @@ hr {
     padding: 15px;
   }
 }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+th, td {
+  border: 1px solid #ddd;
+  padding: 0.75rem;
+  text-align: left;
+}
+th {
+  background: #007bff;
+  color: white;
+} 

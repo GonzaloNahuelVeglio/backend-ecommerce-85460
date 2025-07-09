@@ -1,5 +1,5 @@
 import passport from "passport";
-import local from "passport-local";
+import { Strategy as LocalStrategy } from "passport-local";
 import bcrypt from "bcrypt";
 import { UserModel } from "../models/Users.js";
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
@@ -7,15 +7,20 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+if (!process.env.JWT_SECRET) {
+  throw new Error("JWT_SECRET no definido en variables de entorno.");
+}
+
+
 export const iniciarPassport = () => {
    passport.use("login",
-    new local.Strategy(
+    new LocalStrategy(
       { usernameField: "email" },
       async (username, password, done) => {
         try {
           const usuario = await UserModel.findOne({ email: username }).lean();
           if (!usuario) return done(null, false, { message: "Usuario no encontrado." });
-          if (!bcrypt.compareSync(password, usuario.password)) return done(null, false, { message: "Contraseña inválida." });
+          if (!await bcrypt.compare(password, usuario.password)) return done(null, false, { message: "Contraseña inválida." });
 
           delete usuario.password;
           return done(null, usuario);

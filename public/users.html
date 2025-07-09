@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>👥 Todos los Usuarios - Ecommerce Backend</title>
   <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
 </head>
 <body>
   <nav class="navbar">
@@ -12,6 +13,7 @@
       <a href="./index.html">🏠 Home</a>
       <a href="./register.html">👤 Crear Usuario</a>
       <a href="./current.html">🔍 Current</a>
+      <a href="./users.html">🔍 Ver usuarios</a>  
       <a href="./login.html">🔐 Login</a>
     </div>
   </nav>
@@ -38,6 +40,22 @@
           <p>Cargando datos de usuarios...</p>
         </div>
         <pre id="result" class="users-data">Presiona el botón para cargar la lista de usuarios...</pre>
+
+          <table id="usersTable">
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Apellido</th>
+      <th>Email</th>
+      <th>Edad</th>
+      <th>Role</th>
+      <th>Creado</th>
+    </tr>
+  </thead>
+  <tbody> 
+  </tbody>
+</table>
+
       </div>
     </div>
   </div>
@@ -64,30 +82,41 @@
         const response = await fetch('/api/users', {
           method: 'GET',
           headers: {
-            'Authorization': 'Bearer ${token}',
+            'Authorization': `Bearer ${token}`, 
             'Content-Type': 'application/json'
           }
         });
 
-        const data = await response.json();
-        
         if (response.ok) {
-          // Formatear el JSON con colores
-          const formattedData = JSON.stringify(data, null, 2)
-            .replace(/"([^"]+)":/g, '"<span class="json-key">$1</span>":')
-            .replace(/: "([^"]+)"/g, ': "<span class="json-string">$1</span>"')
-            .replace(/: (\d+)/g, ': <span class="json-number">$1</span>')
-            .replace(/: (null|true|false)/g, ': <span class="json-boolean">$1</span>')
-            .replace(/"role": "([^"]+)"/g, '"role": "<span class="json-role $1">$1</span>"');
-          
-          document.getElementById('result').innerHTML = formattedData;
-          showAlert(`Datos cargados correctamente. ${data.length || data.users?.length || 0} usuarios encontrados.`, 'success');
-        } else {
-          showAlert('Error: ' + (data.message || 'No se pudo obtener la información de usuarios'), 'error');
+  const data = await response.json();
+  
+  const tbody = document.querySelector('#usersTable tbody');
+  tbody.innerHTML = '';  
+
+  data.forEach(user => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${user.first_name}</td>
+      <td>${user.last_name}</td>
+      <td>${user.email}</td>
+      <td>${user.age}</td>
+      <td>${user.role}</td>
+      <td>${new Date(user.createdAt).toLocaleDateString()}</td>
+    `;
+    tbody.appendChild(row);
+  });
+
+  showAlert(`Datos cargados correctamente. ${data.length || 0} usuarios encontrados.`, 'success');
+
+} else {
+  const errorText = await response.text(); 
+          showAlert('Error: ' + errorText, 'error');
+
           if (response.status === 403) {
             showAlert('Parece que no tienes permisos de administrador', 'error');
           }
         }
+
       } catch (error) {
         console.error('Error:', error);
         showAlert('Error de conexión. Intenta nuevamente.', 'error');
@@ -98,7 +127,7 @@
       }
     });
 
-    // Función para mostrar alertas
+    
     function showAlert(message, type = 'error') {
       const alertDiv = document.createElement('div');
       alertDiv.className = `alert alert-${type}`;

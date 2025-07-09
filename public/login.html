@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🔐 Login - Ecommerce Backend</title>
     <link rel="stylesheet" href="css/style.css"> 
+  <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
 </head>
 <body>
     <nav class="navbar">
@@ -54,7 +55,7 @@
         const loginButton = document.getElementById('loginButton');
         const alertContainer = document.getElementById('alertContainer');
         
-        // Función para mostrar alertas
+        
         function showAlert(message, type = 'error') {
             const alertDiv = document.createElement('div');
             alertDiv.className = `alert alert-${type}`;
@@ -63,13 +64,13 @@
             alertContainer.innerHTML = '';
             alertContainer.appendChild(alertDiv);
             
-            // Auto-remove alert after 5 seconds
+            
             setTimeout(() => {
                 alertDiv.remove();
             }, 5000);
         }
         
-        // Función para mostrar estado de carga
+        
         function setLoading(isLoading) {
             if (isLoading) {
                 loginButton.classList.add('loading');
@@ -88,7 +89,7 @@
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             
-            // Validación básica
+            
             if (!email || !password) {
                 showAlert('Por favor, completa todos los campos');
                 return;
@@ -109,7 +110,7 @@
                     localStorage.setItem('token', data.token);
                     showAlert('¡Login exitoso! Redirigiendo...', 'success');
                     
-                    // Redirect after short delay
+                    
                     setTimeout(() => {
                         window.location.href = '/current.html';
                     }, 1500);
@@ -124,7 +125,7 @@
             }
         });
         
-        // Efecto de focus en inputs
+        
         document.querySelectorAll('input').forEach(input => {
             input.addEventListener('focus', function() {
                 this.parentElement.style.transform = 'translateY(-2px)';

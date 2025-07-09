@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>📦 Ecommerce Backend — Comisión 85460</title>
 <link rel="stylesheet" href="./css/style.css">
+  <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
 </head>
 <body>
   <nav class="navbar">
@@ -29,12 +30,13 @@
       <p>Este proyecto implementa un <strong>CRUD de usuarios</strong> junto con un sistema de <strong>autenticación y autorización</strong> utilizando <strong>Passport</strong> y <strong>JWT</strong>, siguiendo la estructura de un backend para ecommerce.</p>
       <p>Incluye:</p>
       <ul>
-        <li>Modelo <code>User</code> con campos requeridos y referencia a <code>Cart</code></li>
-        <li>Contraseña encriptada con <strong>bcrypt</strong></li>
-        <li>Estrategia <strong>passport-local</strong> para login</li>
-        <li>Estrategia <strong>passport-jwt</strong> para rutas protegidas</li>
-        <li>Sistema de login que genera un <strong>token JWT</strong></li>
-        <li>Endpoint <code>/api/sessions/current</code> protegido</li>
+        <li>Modelo <code>User</code> con campos requeridos y referencia a <code>Cart</code>.</li>
+        <li>Contraseña encriptada con <strong>bcrypt</strong>.</li>
+        <li>Estrategia <strong>passport-local</strong> para login.</li>
+        <li>Estrategia <strong>passport-jwt</strong> para rutas protegidas.</li>
+        <li>Sistema de login que genera un <strong>token JWT</strong>.</li>
+        <li>Endpoint <code>/api/sessions/current</code> protegido.</li>
+        <li><strong>Vistas frontend</strong>: login, registro, usuario actual y listado de usuarios, desarrolladas en HTML y CSS moderno.</li>
       </ul>
     </div>
 
@@ -55,7 +57,7 @@
         </div>
         <div class="tech-item">
           <img class="badge" src="https://img.shields.io/badge/-Passport.js-34E27A?logo=passport&logoColor=white" alt="Passport badge">
-          <strong>Passport.js</strong>
+          <strong>Passport.js (passport-local, passport-jwt)</strong>
         </div>
         <div class="tech-item">
           <span style="color: var(--accent-color);">🔒</span>
@@ -65,6 +67,14 @@
           <span style="color: var(--secondary-color);">⚙️</span>
           <strong>dotenv</strong>
         </div>
+        <div class="tech-item">
+          <span style="color: var(--secondary-color);">🎨</span>
+          <strong>HTML5, CSS3</strong>
+        </div>
+        <div class="tech-item">
+          <span style="color: var(--secondary-color);">📦</span>
+          <strong>ES Modules (type: "module")</strong>
+        </div>
       </div>
     </div>
 
@@ -73,16 +83,39 @@
       <pre><code>/public
   index.html
   login.html
+  register.html
   current.html
+  users.html
+  css/
+    style.css
+  img/
+    favicon.svg
 /src
   config/
+    db.js
+    passport.config.js
   controllers/
+    user.controller.js
+    session.controller.js
   models/
+    Users.js
   routes/
-server.js 
+    user.routes.js
+    session.routes.js
+  utils/
+  server.js
 .env
 README.MD
 package.json</code></pre>
+    <div class="card">
+      <h2>🖥️ Vistas principales</h2>
+      <ul>
+        <li><strong>login.html</strong>: formulario de inicio de sesión</li>
+        <li><strong>register.html</strong>: formulario de registro de usuario</li>
+        <li><strong>current.html</strong>: muestra los datos del usuario autenticado</li>
+        <li><strong>users.html</strong>: muestra todos los usuarios de la base de datos</li>
+      </ul>
+    </div>
     </div>
 
     <div class="card">

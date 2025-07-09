@@ -8,11 +8,12 @@ import sessionRouter from './routes/session.routes.js';
 
 dotenv.config();
 
-const app = express();
-const PORT = process.env.PORT || 8080;
 
-app.use(express.json());
-app.use(express.static('public'));
+const app = express();
+const PORT = process.env.PORT ;
+
+app.use(express.json()); 
+app.use(express.static('public')); 
 
 
  app.get('/', (req, res) => {

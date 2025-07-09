@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>👤 Registro - Ecommerce Backend</title>
     <link rel="stylesheet" href="css/style.css"> 
+  <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
 </head>
 <body>
     <nav class="navbar">
@@ -80,7 +81,7 @@
         const strengthBar = document.getElementById('strengthBar');
         const strengthText = document.getElementById('strengthText');
         
-        // Función para mostrar alertas
+        
         function showAlert(message, type = 'error') {
             const alertDiv = document.createElement('div');
             alertDiv.className = `alert alert-${type}`;
@@ -89,13 +90,13 @@
             alertContainer.innerHTML = '';
             alertContainer.appendChild(alertDiv);
             
-            // Auto-remove alert after 5 seconds
+            
             setTimeout(() => {
                 alertDiv.remove();
             }, 5000);
         }
         
-        // Función para mostrar estado de carga
+        
         function setLoading(isLoading) {
             if (isLoading) {
                 registerButton.classList.add('loading');
@@ -108,7 +109,7 @@
             }
         }
         
-        // Validación de fortaleza de contraseña
+        
         function checkPasswordStrength(password) {
             let strength = 0;
             let text = '';
@@ -149,12 +150,12 @@
             return strength;
         }
         
-        // Event listener para contraseña
+        
         passwordInput.addEventListener('input', function() {
             checkPasswordStrength(this.value);
         });
         
-        // Validación en tiempo real
+        
         document.querySelectorAll('input').forEach(input => {
             input.addEventListener('blur', function() {
                 const formGroup = this.parentElement;
@@ -174,7 +175,7 @@
             });
         });
         
-        // Manejo del formulario
+        
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -184,7 +185,7 @@
             const age = parseInt(document.getElementById('age').value);
             const password = document.getElementById('password').value;
             
-            // Validaciones
+            
             if (!first_name || !last_name || !email || !age || !password) {
                 showAlert('Por favor, completa todos los campos');
                 return;
@@ -217,12 +218,12 @@
                     strengthBar.className = 'strength-fill';
                     strengthText.textContent = 'Ingresa una contraseña';
                     
-                    // Limpiar clases de validación
+                    
                     document.querySelectorAll('.form-group').forEach(group => {
                         group.classList.remove('valid', 'invalid');
                     });
                     
-                    // Redirect to login after success
+                    
                     setTimeout(() => {
                         window.location.href = '/login.html';
                     }, 2000);
@@ -237,7 +238,7 @@
             }
         });
         
-        // Efecto de focus en inputs
+        
         document.querySelectorAll('input').forEach(input => {
             input.addEventListener('focus', function() {
                 this.parentElement.style.transform = 'translateY(-2px)';

@@ -1,6 +1,7 @@
- import { Router } from 'express';
+import { Router } from 'express';
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
+import { getCurrent } from '../controllers/session.controller.js';
 
 const router = Router();
 
@@ -19,8 +20,7 @@ router.post('/login', (req, res, next) => {
   })(req, res, next);
 });
 
- router.get('/current', passport.authenticate('jwt', { session: false }), (req, res) => {
-  res.json({ user: req.user });
-});
+
+router.get('/current', passport.authenticate('jwt', { session: false }), getCurrent);
 
 export default router;

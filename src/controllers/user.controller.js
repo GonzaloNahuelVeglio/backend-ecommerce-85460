@@ -5,19 +5,22 @@ import mongoose from 'mongoose';
 export const createUser = async (req, res) => {
     try {
         const { first_name, last_name, email, age, password } = req.body;
- 
-         if (!first_name || !last_name || !email || !age || !password) {
+
+        if (!first_name || !last_name || !email || !age || !password) {
             return res.status(400).json({ message: 'Faltan campos requeridos.' });
         }
 
-         const userExists = await UserModel.findOne({ email });
+        const userExists = await UserModel.findOne({ email });
         if (userExists) {
             return res.status(409).json({ message: 'El email ya está registrado.' });
         }
 
-         const hashedPassword = bcrypt.hashSync(password, 10);
+        const hashedPassword = await bcrypt.hash(password, 10);
+        if (!hashedPassword) {
+            return res.status(500).json({ message: 'Error al hashear la contraseña.' });
+        }
 
-         const newUser = new UserModel({
+        const newUser = new UserModel({
             first_name,
             last_name,
             email,
@@ -79,11 +82,14 @@ export const updateUser = async (req, res) => {
         const { uid } = req.params;
         const { first_name, last_name, email, age, password } = req.body;
 
-         if (!first_name || !last_name || !email || !age || !password) {
+        if (!first_name || !last_name || !email || !age || !password) {
             return res.status(400).json({ message: 'Faltan campos requeridos.' });
         }
 
-         const hashedPassword = bcrypt.hashSync(password, 10);
+        const hashedPassword = await bcrypt.hash(password, 10);
+        if (!hashedPassword) {
+            return res.status(500).json({ message: 'Error al hashear la contraseña.' });
+        }
 
         if (!mongoose.Types.ObjectId.isValid(uid)) {
             return res.status(400).json({ message: 'ID no válido.' });
@@ -98,7 +104,7 @@ export const updateUser = async (req, res) => {
         if (!updatedUser) {
             return res.status(404).json({ message: 'Usuario no encontrado.' });
         }
-
+        updatedUser.password = undefined;
         res.status(200).json({
             message: 'Usuario actualizado correctamente.',
             user: updatedUser
