@@ -38,17 +38,27 @@ Incluye:
 /public
   index.html
   login.html
-  register.html       
-  current.html        
+  register.html
+  current.html
   users.html
   css/
-    style.css         
+    style.css
+  img/
+    favicon.svg
 /src
   config/
+    db.js
+    passport.config.js
   controllers/
+    user.controller.js
+    session.controller.js
   models/
+    Users.js
   routes/
-  server.js 
+    user.routes.js
+    session.routes.js
+  utils/
+  server.js
 .env
 README.MD
 package.json
