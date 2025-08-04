@@ -1,0 +1,141 @@
+[
+  {
+    "name": "Registro de usuario",
+    "method": "POST",
+    "url": "/api/sessions/register",
+    "body": {
+      "first_name": "Juan",
+      "last_name": "Pérez",
+      "email": "juanperez@example.com",
+      "age": 30,
+      "password": "12345678"
+    }
+  },
+  {
+    "name": "Login de usuario",
+    "method": "POST",
+    "url": "/api/sessions/login",
+    "body": {
+      "email": "juanperez@example.com",
+      "password": "12345678"
+    }
+  },
+  {
+    "name": "Obtener usuario actual (current)",
+    "method": "GET",
+    "url": "/api/sessions/current",
+    "headers": {
+      "Authorization": "Bearer <token>"
+    }
+  },
+  {
+    "name": "Crear producto (admin)",
+    "method": "POST",
+    "url": "/api/products",
+    "headers": {
+      "Authorization": "Bearer <admin_token>"
+    },
+    "body": {
+      "title": "Remera negra",
+      "description": "Remera de algodón premium",
+      "price": 3500,
+      "stock": 20,
+      "category": "indumentaria",
+      "code": "REM-001",
+      "thumbnails": ["https://img.com/remera.jpg"]
+    }
+  },
+  {
+    "name": "Listar productos",
+    "method": "GET",
+    "url": "/api/products"
+  },
+  {
+    "name": "Obtener producto por ID",
+    "method": "GET",
+    "url": "/api/products/<pid>"
+  },
+  {
+    "name": "Actualizar producto (admin)",
+    "method": "PUT",
+    "url": "/api/products/<pid>",
+    "headers": {
+      "Authorization": "Bearer <admin_token>"
+    },
+    "body": {
+      "price": 4000,
+      "stock": 15
+    }
+  },
+  {
+    "name": "Eliminar producto (admin)",
+    "method": "DELETE",
+    "url": "/api/products/<pid>",
+    "headers": {
+      "Authorization": "Bearer <admin_token>"
+    }
+  },
+  {
+    "name": "Crear carrito",
+    "method": "POST",
+    "url": "/api/carts",
+    "headers": {
+      "Authorization": "Bearer <user_token>"
+    },
+    "body": {
+      "user": "<user_id>"
+    }
+  },
+  {
+    "name": "Agregar producto al carrito",
+    "method": "POST",
+    "url": "/api/carts/<cid>/products",
+    "headers": {
+      "Authorization": "Bearer <user_token>"
+    },
+    "body": {
+      "productId": "<pid>",
+      "quantity": 2
+    }
+  },
+  {
+    "name": "Eliminar producto del carrito",
+    "method": "DELETE",
+    "url": "/api/carts/<cid>/products/<pid>",
+    "headers": {
+      "Authorization": "Bearer <user_token>"
+    }
+  },
+  {
+    "name": "Obtener carrito por ID",
+    "method": "GET",
+    "url": "/api/carts/<cid>",
+    "headers": {
+      "Authorization": "Bearer <user_token>"
+    }
+  },
+  {
+    "name": "Finalizar compra de carrito (crear ticket)",
+    "method": "POST",
+    "url": "/api/carts/<cid>/purchase",
+    "headers": {
+      "Authorization": "Bearer <user_token>"
+    }
+  },
+  {
+    "name": "Listar tickets",
+    "method": "GET",
+    "url": "/api/tickets",
+    "headers": {
+      "Authorization": "Bearer <user_token>"
+    }
+  },
+  {
+    "name": "Obtener ticket por ID",
+    "method": "GET",
+    "url": "/api/tickets/<tid>",
+    "headers": {
+      "Authorization": "Bearer <user_token>"
+    }
+  }
+]

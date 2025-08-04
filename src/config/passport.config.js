@@ -31,6 +31,39 @@ export const iniciarPassport = () => {
     )
   );
 
+    // Estrategia de registro
+  passport.use("register",
+    new LocalStrategy(
+      { usernameField: "email", passReqToCallback: true },
+      async (req, email, password, done) => {
+        try {
+          const { first_name, last_name, age } = req.body;
+          if (!first_name || !last_name || !email || !age || !password) {
+            return done(null, false, { message: "Faltan campos requeridos." });
+          }
+          const userExists = await UserModel.findOne({ email });
+          if (userExists) {
+            return done(null, false, { message: "El email ya está registrado." });
+          }
+          const hashedPassword = await bcrypt.hash(password, 10);
+          const newUser = await UserModel.create({
+            first_name,
+            last_name,
+            email,
+            age,
+            password: hashedPassword
+          });
+          const userObj = newUser.toObject();
+          delete userObj.password;
+          return done(null, userObj);
+        } catch (error) {
+          return done(error);
+        }
+      }
+    )
+  );
+
+
    passport.use("jwt",
     new JwtStrategy(
       {

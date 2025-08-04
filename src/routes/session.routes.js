@@ -5,6 +5,18 @@ import { getCurrent } from '../controllers/session.controller.js';
 
 const router = Router();
 
+// Registro de usuario
+router.post('/register', (req, res, next) => {
+  passport.authenticate('register', { session: false }, (err, user, info) => {
+    if (err) return next(err);
+    if (!user) return res.status(400).json({ message: info?.message || 'No se pudo registrar el usuario.' });
+    res.status(201).json({
+      message: 'Usuario registrado correctamente.',
+      user
+    });
+  })(req, res, next);
+});
+
 router.post('/login', (req, res, next) => {
   passport.authenticate('login', { session: false }, (err, user, info) => {
     if (err) return next(err);
