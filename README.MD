@@ -1,38 +1,45 @@
+
 # 📦 Ecommerce Backend — Comisión 85460
 
-**Pre-Entrega N°1 — Backend 2 (Coderhouse)**  
 Desarrollado por: [**Gonzalo Veglio**](https://www.linkedin.com/in/gonzalo-nahuel-veglio/)
 
 ---
 
-## 🚀 Descripción
+## Tabla de Contenidos
 
-Este proyecto implementa un **CRUD de usuarios** junto con un sistema de **autenticación y autorización** utilizando **Passport** y **JWT**, siguiendo la estructura de un backend para ecommerce.
-
-Incluye:
-- Modelo `User` con campos requeridos y referencia a `Cart`.
-- Contraseña encriptada con **bcrypt**.
-- Estrategia **passport-local** para login.
-- Estrategia **passport-jwt** para rutas protegidas.
-- Sistema de login que genera un **token JWT**.
-- Endpoint `/api/sessions/current` protegido.
-- **Vistas frontend**: login, registro y usuario actual, desarrolladas en HTML y CSS moderno.
-
----
- 
-## ⚙️ Tecnologías utilizadas
-
-- ![Node.js](https://img.shields.io/badge/-Node.js-339933?logo=node.js&logoColor=white) **Node.js**
-- ![Express](https://img.shields.io/badge/-Express.js-000000?logo=express&logoColor=white) **Express**
-- ![MongoDB](https://img.shields.io/badge/-MongoDB-47A248?logo=mongodb&logoColor=white) **MongoDB** + **Mongoose**
-- ![Passport](https://img.shields.io/badge/-Passport.js-34E27A?logo=passport&logoColor=white) **Passport**, **passport-local**, **passport-jwt**
-- 🔒 **bcrypt**, **jsonwebtoken**
-- ⚙️ **dotenv**
-- 🎨 **HTML5** y **CSS3** para las vistas de login, registro y usuario actual
+- [Descripción](#descripción)
+- [Tecnologías](#tecnologías)
+- [Estructura del Proyecto](#estructura-del-proyecto)
+- [DTOs](#dtos)
+- [Roles y Middlewares](#roles-y-middlewares)
+- [Endpoints](#endpoints)
+- [Instalación y Configuración](#instalación-y-configuración)
+- [Pruebas principales](#pruebas-principales)
+- [Mejoras futuras](#mejoras-futuras)
+- [Autor](#autor)
 
 ---
 
-## 📁 Estructura base
+## Descripción
+
+Backend profesional para ecommerce, implementando arquitectura por capas, patrones DAO/Repository, autenticación y autorización con Passport (estrategias local y JWT), manejo de roles, lógica de compra, tickets y mailing. Incluye vistas HTML/CSS para pruebas manuales.
+
+---
+
+## Tecnologías
+
+- **Node.js**
+- **Express**
+- **MongoDB** + **Mongoose**
+- **Passport** (local, jwt)
+- **bcrypt**, **jsonwebtoken**
+- **dotenv**
+- **Nodemailer**
+- **HTML5** y **CSS3** (vistas de prueba)
+
+---
+
+## Estructura del Proyecto
 
 ```
 /public
@@ -41,6 +48,11 @@ Incluye:
   register.html
   current.html
   users.html
+  products.html
+  cart.html
+  tickets.html
+  forgot-password.html
+  reset-password.html
   css/
     style.css
   img/
@@ -52,52 +64,151 @@ Incluye:
   controllers/
     user.controller.js
     session.controller.js
+    product.controller.js
+    cart.controller.js
+    ticket.controller.js
+    password.controller.js
+    purchase.controller.js
+  daos/
+    user.dao.js
+    product.dao.js
+    cart.dao.js
+    ticket.dao.js
+  repositories/
+    user.repository.js
+    product.repository.js
+    cart.repository.js
+    ticket.repository.js
+  DTO/
+    user.dto.js
+  middlewares/
+    roleAuth.js
   models/
     Users.js
+    Product.js
+    Cart.js
+    Ticket.js
   routes/
     user.routes.js
     session.routes.js
-  utils/
+    product.routes.js
+    cart.routes.js
+    ticket.routes.js
+    password.routes.js
+  services/
+    register.service.js
   server.js
 .env
 README.MD
 package.json
 ```
 
-Las vistas principales incluidas son:
-- **login.html**: formulario de inicio de sesión
-- **register.html**: formulario de registro de usuario
-- **current.html**: muestra los datos del usuario autenticado
-- **users.html**: muestra todos los usuario de la base de datos
+---
 
+## DTOs
 
-
-## 🛠️ Cambios realizados y mejoras
-
-### Refactorizaciones y arquitectura
-- Implementación completa de los patrones DAO y Repository para todas las entidades principales (User, Product, Cart, Ticket), desacoplando la lógica de acceso a datos de los controladores.
-- Refactorización de todos los controladores para utilizar los repositorios y DTOs, mejorando la mantenibilidad y seguridad.
-- Centralización de la lógica de autorización por roles mediante middlewares reutilizables (`adminOnly`, `userOnly`).
-- Validaciones manuales de entrada en los endpoints críticos para asegurar integridad de datos.
-
-### Funcionalidades nuevas
-- Lógica de compra completa: validación de stock, generación de ticket, actualización automática del carrito y registro de la compra.
-- **Envío automático del ticket por email** al usuario al finalizar la compra, usando Nodemailer.
-- Recuperación de contraseña vía email con token seguro y expiración, usando Nodemailer.
-- Asociación automática de carrito al momento de registro de usuario.
-- Endpoint `/api/sessions/current` protegido y que retorna un DTO seguro del usuario autenticado.
- 
-### Seguridad
-- Encriptación de contraseñas con bcrypt.
-- Uso de JWT para autenticación y autorización en endpoints protegidos.
-- Filtrado de datos sensibles mediante DTOs.
-
-### Frontend
-- Se incluyeron vistas HTML/CSS básicas únicamente para visualizar información y probar el flujo de autenticación/registro. No es un frontend productivo ni responsivo.
+Un DTO (Data Transfer Object) es un objeto que transfiere datos entre capas, evitando exponer información sensible o innecesaria. En este proyecto, los DTOs se usan especialmente en endpoints como `/current` para retornar solo los datos necesarios del usuario autenticado (por ejemplo, ocultando la contraseña y otros campos privados). Esto mejora la seguridad y la claridad de la API.
 
 ---
 
-## 🚀 Mejoras sugeridas a futuro
+## Roles y Middlewares
+
+El sistema implementa roles de usuario:
+
+- **admin**: puede crear, actualizar y eliminar productos.
+- **user**: puede listar productos y gestionar su propio carrito.
+
+Los middlewares `adminOnly` y `userOnly` (en `src/middlewares/roleAuth.js`) protegen los endpoints según el rol del usuario autenticado. Ejemplo: solo los administradores pueden acceder a rutas de creación, edición y borrado de productos, mientras que los usuarios solo pueden agregar productos a su carrito y finalizar compras.
+
+---
+
+## Endpoints
+
+### Usuarios y sesiones
+
+- **POST** `/api/users` — Crear usuario (registro)
+- **POST** `/api/sessions/login` — Login de usuario
+- **GET** `/api/sessions/current` — Obtener usuario actual (requiere JWT)
+- **GET** `/api/users` — Lista todos los usuarios (protegido)
+- **GET** `/api/users/:uid` — Obtiene un usuario por ID (no protegido)
+- **PUT** `/api/users/:uid` — Actualiza un usuario por ID (protegido)
+- **DELETE** `/api/users/:uid` — Elimina un usuario por ID (protegido)
+
+### Productos
+
+- **GET** `/api/products` — Lista todos los productos
+- **GET** `/api/products/:pid` — Obtiene un producto por ID
+- **POST** `/api/products` — Crea un producto (solo admin)
+- **PUT** `/api/products/:pid` — Actualiza un producto (solo admin)
+- **DELETE** `/api/products/:pid` — Elimina un producto (solo admin)
+
+### Carritos
+
+- **POST** `/api/carts` — Crea un carrito
+- **GET** `/api/carts/:cid` — Obtiene un carrito
+- **POST** `/api/carts/:cid/products` — Agrega producto al carrito (solo user)
+- **DELETE** `/api/carts/:cid/products/:productId` — Elimina producto del carrito (solo user)
+- **POST** `/api/carts/:cid/purchase` — Finaliza compra y genera ticket (solo user)
+
+### Tickets
+
+- **GET** `/api/tickets` — Lista todos los tickets (protegido)
+- **GET** `/api/tickets/:tid` — Obtiene un ticket por ID (protegido)
+
+### Recuperación de contraseña
+
+- **POST** `/api/password/request-reset` — Solicita email de recuperación
+- **POST** `/api/password/reset` — Cambia la contraseña usando el token recibido
+
+---
+
+## Instalación y Configuración
+
+1. Clona el repositorio:
+   ```bash
+   git clone https://github.com/GonzaloNahuelVeglio/backend-ecommerce-85460
+   ```
+2. Instala dependencias:
+   ```bash
+   npm install
+   ```
+3. Configura tu archivo `.env`:
+   ```env
+   MONGO_URI=<tu_uri_mongodb>
+   JWT_SECRET=<tu_clave_secreta_jwt>
+   PORT=8080
+   EMAIL_USER=<tu_email>
+   EMAIL_PASS=<tu_contraseña>
+   # EMAIL_HOST y EMAIL_PORT solo si no usas Gmail
+   # EMAIL_HOST=smtp.example.com
+   # EMAIL_PORT=587
+   ```
+   > ⚠️ Reemplaza los valores por tus datos reales. No compartas tu archivo `.env` ni tus credenciales. Si usas Gmail, EMAIL_HOST y EMAIL_PORT no son necesarios.
+4. Inicia el servidor:
+   ```bash
+   npm run dev
+   ```
+
+---
+
+## Pruebas principales
+
+Puedes probar los endpoints con Postman o cualquier cliente HTTP. Ejemplos:
+
+- **Crear usuario:**
+  - POST `/api/users`
+  - Body: `{ "first_name": "Juan", "last_name": "Pérez", "email": "juan@mail.com", "age": 30, "password": "123456" }`
+- **Login:**
+  - POST `/api/sessions/login`
+  - Body: `{ "email": "juan@mail.com", "password": "123456" }`
+  - Respuesta: `{ "token": "..." }`
+- **Obtener usuario actual:**
+  - GET `/api/sessions/current`
+  - Header: `Authorization: Bearer <token>`
+
+---
+
+## Mejoras futuras
 
 - Implementar DTOs para productos y tickets para mayor control de la salida de datos.
 - Mejorar el manejo de errores y mensajes personalizados en todas las rutas.
@@ -110,60 +221,9 @@ Las vistas principales incluidas son:
 
 ---
 
-## 📦 Instalación
+## Autor
 
-1. Cloná el repositorio:  
-   `git clone https://github.com/GonzaloNahuelVeglio/backend-ecommerce-85460`
-
-2. Instalá dependencias:  
-   `npm install`
-
-3. Configurá tu archivo `.env`:
-   ```
-   MONGO_URI=<TU_URI_DE_MONGO>
-   JWT_SECRET=<TU_SECRETO>
-   PORT=8080
-   ```
-
-4. Para correr el servidor:  
-   `npm run dev`
-
----
-
-## 🔑 Pruebas principales (Postman)
-
-### Crear usuario (registro)
-- **POST** `/api/users`
-- Body: `{ first_name, last_name, email, age, password }`
-
-### Login de usuario
-- **POST** `/api/sessions/login`
-- Body: `{ email, password }`
-- Respuesta: `{ token }`
-
-### Obtener usuario actual (requiere JWT)
-- **GET** `/api/sessions/current`
-- Header: `Authorization: Bearer <token>`
-
-### CRUD de usuarios (requiere JWT)
-
-- **GET** `/api/users`  
-  Lista todos los usuarios (protegido).
-
-- **GET** `/api/users/:uid`  
-  Obtiene un usuario por ID (no protegido).
-
-- **PUT** `/api/users/:uid`  
-  Actualiza un usuario por ID (protegido).
-
-- **DELETE** `/api/users/:uid`  
-  Elimina un usuario por ID (protegido).
-
----
-
-## ⚡ Autor
-
-[Gonza Veglio](https://github.com/GonzaloNahuelVeglio)
+[Gonza Veglio](https://github.com/GonzaloNahuelVeglio)  
 Comisión 85460 — Backend 2 — Coderhouse
 
 ---
