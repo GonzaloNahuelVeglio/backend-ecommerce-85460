@@ -70,6 +70,43 @@ Las vistas principales incluidas son:
 - **current.html**: muestra los datos del usuario autenticado
 - **users.html**: muestra todos los usuario de la base de datos
 
+
+
+## 🛠️ Cambios realizados y mejoras
+
+### Refactorizaciones y arquitectura
+- Implementación completa de los patrones DAO y Repository para todas las entidades principales (User, Product, Cart, Ticket), desacoplando la lógica de acceso a datos de los controladores.
+- Refactorización de todos los controladores para utilizar los repositorios y DTOs, mejorando la mantenibilidad y seguridad.
+- Centralización de la lógica de autorización por roles mediante middlewares reutilizables (`adminOnly`, `userOnly`).
+- Validaciones manuales de entrada en los endpoints críticos para asegurar integridad de datos.
+
+### Funcionalidades nuevas
+- Lógica de compra completa: validación de stock, generación de ticket, actualización automática del carrito y registro de la compra.
+- Recuperación de contraseña vía email con token seguro y expiración, usando Nodemailer.
+- Asociación automática de carrito al momento de registro de usuario.
+- Endpoint `/api/sessions/current` protegido y que retorna un DTO seguro del usuario autenticado.
+- Documentación de pruebas: flujo de pruebas detallado en Postman (`omitir/flujo_postman.md`).
+
+### Seguridad
+- Encriptación de contraseñas con bcrypt.
+- Uso de JWT para autenticación y autorización en endpoints protegidos.
+- Filtrado de datos sensibles mediante DTOs.
+
+### Frontend
+- Se incluyeron vistas HTML/CSS básicas únicamente para visualizar información y probar el flujo de autenticación/registro. No es un frontend productivo ni responsivo.
+
+---
+
+## 🚀 Mejoras sugeridas a futuro
+
+- Implementar DTOs para productos y tickets para mayor control de la salida de datos.
+- Mejorar el manejo de errores y mensajes personalizados en todas las rutas.
+- Agregar tests automatizados (unitarios/integración) para endpoints y lógica de negocio.
+- Internacionalización de mensajes y respuestas.
+- Mejorar el frontend con un framework moderno (React, Vue, etc.) y consumir la API de manera real.
+- Implementar paginación, filtros y ordenamiento en endpoints de productos y usuarios.
+- Agregar logs centralizados y monitoreo de errores.
+
 ---
 
 ## 📦 Instalación
@@ -127,3 +164,5 @@ Las vistas principales incluidas son:
 
 [Gonza Veglio](https://github.com/GonzaloNahuelVeglio)
 Comisión 85460 — Backend 2 — Coderhouse
+
+---

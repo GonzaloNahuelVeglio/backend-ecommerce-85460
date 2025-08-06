@@ -2,6 +2,7 @@ import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import bcrypt from "bcrypt";
 import { UserModel } from "../models/Users.js";
+import { registerUserWithCart } from "../services/register.service.js";
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 import dotenv from "dotenv";
 
@@ -45,13 +46,12 @@ export const iniciarPassport = () => {
           if (userExists) {
             return done(null, false, { message: "El email ya está registrado." });
           }
-          const hashedPassword = await bcrypt.hash(password, 10);
-          const newUser = await UserModel.create({
+          const newUser = await registerUserWithCart({
             first_name,
             last_name,
             email,
             age,
-            password: hashedPassword
+            password
           });
           const userObj = newUser.toObject();
           delete userObj.password;

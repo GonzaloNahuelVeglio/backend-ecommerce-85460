@@ -1,4 +1,3 @@
-// src/dtos/user.dto.js
 export class UserDTO {
   constructor(user) {
     this._id = user._id;
@@ -7,6 +6,5 @@ export class UserDTO {
     this.email = user.email;
     this.age = user.age;
     this.role = user.role;
-    // No incluyas la contraseña ni datos sensibles
-  }
+   }
 }

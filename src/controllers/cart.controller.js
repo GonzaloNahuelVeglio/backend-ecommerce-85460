@@ -1,11 +1,14 @@
-import { CartModel } from '../models/Cart.js';
-import { ProductModel } from '../models/Product.js';
+import { CartRepository } from '../repositories/cart.repository.js';
+import { ProductRepository } from '../repositories/product.repository.js';
+
+const cartRepository = new CartRepository();
+const productRepository = new ProductRepository();
 
 export const createCart = async (req, res) => {
   try {
     const { user } = req.body;
     if (!user) return res.status(400).json({ message: 'Falta el usuario.' });
-    const cart = await CartModel.create({ user, products: [] });
+    const cart = await cartRepository.createCart({ user, products: [] });
     res.status(201).json({ message: 'Carrito creado.', cart });
   } catch (error) {
     res.status(500).json({ message: 'Error al crear carrito.' });
@@ -15,7 +18,7 @@ export const createCart = async (req, res) => {
 export const getCart = async (req, res) => {
   try {
     const { cid } = req.params;
-    const cart = await CartModel.findById(cid).populate('products.product');
+    const cart = await cartRepository.getCartById(cid);
     if (!cart) return res.status(404).json({ message: 'Carrito no encontrado.' });
     res.status(200).json(cart);
   } catch (error) {
@@ -28,9 +31,9 @@ export const addProductToCart = async (req, res) => {
     const { cid } = req.params;
     const { productId, quantity } = req.body;
     if (!productId || !quantity) return res.status(400).json({ message: 'Faltan datos.' });
-    const cart = await CartModel.findById(cid);
+    const cart = await cartRepository.getCartById(cid);
     if (!cart) return res.status(404).json({ message: 'Carrito no encontrado.' });
-    const product = await ProductModel.findById(productId);
+    const product = await productRepository.getProductById(productId);
     if (!product) return res.status(404).json({ message: 'Producto no encontrado.' });
     const item = cart.products.find(p => p.product.equals(productId));
     if (item) {
@@ -48,7 +51,7 @@ export const addProductToCart = async (req, res) => {
 export const removeProductFromCart = async (req, res) => {
   try {
     const { cid, productId } = req.params;
-    const cart = await CartModel.findById(cid);
+    const cart = await cartRepository.getCartById(cid);
     if (!cart) return res.status(404).json({ message: 'Carrito no encontrado.' });
     cart.products = cart.products.filter(p => !p.product.equals(productId));
     await cart.save();

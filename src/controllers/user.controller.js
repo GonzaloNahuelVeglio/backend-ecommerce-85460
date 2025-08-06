@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import mongoose from 'mongoose';
 import { UserDAO } from '../daos/user.dao.js';
-import { UserDTO } from '../dtos/user.dto.js';
+import { UserDTO } from '../DTO/user.dto.js';
 
 const userDao = new UserDAO();
 
@@ -13,11 +13,23 @@ export const getUserByEmail = async (req, res) => {
 };
 
 export const createUser = async (req, res) => {
+
     try {
         const { first_name, last_name, email, age, password } = req.body;
-
-        if (!first_name || !last_name || !email || !age || !password) {
-            return res.status(400).json({ message: 'Faltan campos requeridos.' });
+        if (!first_name || typeof first_name !== 'string' || first_name.trim().length < 2) {
+            return res.status(400).json({ message: 'Nombre inválido.' });
+        }
+        if (!last_name || typeof last_name !== 'string' || last_name.trim().length < 2) {
+            return res.status(400).json({ message: 'Apellido inválido.' });
+        }
+        if (!email || typeof email !== 'string' || !email.includes('@')) {
+            return res.status(400).json({ message: 'Email inválido.' });
+        }
+        if (!age || typeof age !== 'number' || age < 0) {
+            return res.status(400).json({ message: 'Edad inválida.' });
+        }
+        if (!password || typeof password !== 'string' || password.length < 6) {
+            return res.status(400).json({ message: 'Contraseña inválida (mínimo 6 caracteres).' });
         }
 
         const userExists = await userDao.findByEmail(email);

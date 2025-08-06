@@ -1,14 +1,10 @@
 import { Router } from 'express';
 import { createProduct, getProducts, getProductById, updateProduct, deleteProduct } from '../controllers/product.controller.js';
+
 import passport from 'passport';
+import { adminOnly } from '../middlewares/roleAuth.js';
 
 const router = Router();
-
-// Solo admin puede crear, actualizar y eliminar productos
-const adminOnly = (req, res, next) => {
-  if (req.user?.role !== 'admin') return res.status(403).json({ message: 'Solo admin autorizado.' });
-  next();
-};
 
 router.get('/', getProducts);
 router.get('/:pid', getProductById);
