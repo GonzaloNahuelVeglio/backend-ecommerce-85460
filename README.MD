@@ -82,6 +82,7 @@ Las vistas principales incluidas son:
 
 ### Funcionalidades nuevas
 - Lógica de compra completa: validación de stock, generación de ticket, actualización automática del carrito y registro de la compra.
+- **Envío automático del ticket por email** al usuario al finalizar la compra, usando Nodemailer.
 - Recuperación de contraseña vía email con token seguro y expiración, usando Nodemailer.
 - Asociación automática de carrito al momento de registro de usuario.
 - Endpoint `/api/sessions/current` protegido y que retorna un DTO seguro del usuario autenticado.
@@ -106,6 +107,7 @@ Las vistas principales incluidas son:
 - Mejorar el frontend con un framework moderno (React, Vue, etc.) y consumir la API de manera real.
 - Implementar paginación, filtros y ordenamiento en endpoints de productos y usuarios.
 - Agregar logs centralizados y monitoreo de errores.
+- Permitir al usuario descargar el ticket en PDF o visualizarlo desde el frontend.
 
 ---
 
