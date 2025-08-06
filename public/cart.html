@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🛒 Carrito - Ecommerce Backend</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="./index.html">🏠 Home</a>
+      <a href="./register.html">👤 Crear Usuario</a>
+      <a href="./current.html">🔍 Current</a>
+      <a href="./users.html">🔍 Ver usuarios</a>
+      <a href="./products.html">🛒 Productos</a>
+      <a href="./cart.html" class="active">🛒 Carrito</a>
+      <a href="./tickets.html">🎟️ Tickets</a>
+      <a href="./login.html">🔐 Login</a>
+    </div>
+  </nav>
+  <div class="container">
+    <div class="card">
+      <h1>🛒 Mi Carrito</h1>
+      <div id="alertContainer"></div>
+      <div class="cart-actions">
+        <button id="getCartBtn" class="cart-button">🔄 Cargar Carrito</button>
+        <button id="purchaseBtn" class="cart-button">💳 Finalizar Compra</button>
+      </div>
+      <table id="cartTable">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div id="totalContainer"></div>
+      <div id="addProductFormContainer">
+        <h3>Agregar producto al carrito</h3>
+        <form id="addProductForm">
+          <input type="text" id="productId" placeholder="ID del producto" required />
+          <input type="number" id="quantity" placeholder="Cantidad" required />
+          <button type="submit">Agregar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script>
+    const token = localStorage.getItem('token');
+    const alertContainer = document.getElementById('alertContainer');
+    const cartTable = document.getElementById('cartTable').querySelector('tbody');
+    const getCartBtn = document.getElementById('getCartBtn');
+    const purchaseBtn = document.getElementById('purchaseBtn');
+    const addProductForm = document.getElementById('addProductForm');
+    const totalContainer = document.getElementById('totalContainer');
+    let cartId = localStorage.getItem('cartId');
+
+    function showAlert(message, type = 'error') {
+      const alertDiv = document.createElement('div');
+      alertDiv.className = `alert alert-${type}`;
+      alertDiv.textContent = message;
+      alertContainer.innerHTML = '';
+      alertContainer.appendChild(alertDiv);
+      setTimeout(() => { alertDiv.remove(); }, 5000);
+    }
+
+    getCartBtn.addEventListener('click', loadCart);
+    purchaseBtn.addEventListener('click', purchaseCart);
+    addProductForm.addEventListener('submit', addProductToCart);
+
+    async function loadCart() {
+      if (!token) {
+        showAlert('No hay token guardado. Por favor inicia sesión primero.', 'error');
+        setTimeout(() => { window.location.href = '/login.html'; }, 2000);
+        return;
+      }
+      if (!cartId) {
+        showAlert('No hay carrito asociado. Regístrate o inicia sesión.', 'error');
+        return;
+      }
+      try {
+        const res = await fetch(`/api/carts/${cartId}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error('No se pudo cargar el carrito');
+        const data = await res.json();
+        cartTable.innerHTML = '';
+        let total = 0;
+        (data.products || []).forEach(item => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${item.product}</td>
+            <td>${item.quantity}</td>
+            <td><button onclick="removeProduct('${item.product}')">🗑️</button></td>
+          `;
+          cartTable.appendChild(row);
+          // Si tienes acceso a precio, puedes sumarlo aquí
+        });
+        totalContainer.textContent = `Total de productos: ${(data.products || []).length}`;
+        showAlert('Carrito cargado correctamente.', 'success');
+      } catch (err) {
+        showAlert(err.message);
+      }
+    }
+
+    async function addProductToCart(e) {
+      e.preventDefault();
+      if (!token) return showAlert('No hay token guardado.', 'error');
+      if (!cartId) return showAlert('No hay carrito asociado.', 'error');
+      const productId = addProductForm.productId.value;
+      const quantity = Number(addProductForm.quantity.value);
+      try {
+        const res = await fetch(`/api/carts/${cartId}/products`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ productId, quantity })
+        });
+        if (!res.ok) throw new Error('Error al agregar producto');
+        showAlert('Producto agregado al carrito.', 'success');
+        addProductForm.reset();
+        loadCart();
+      } catch (err) {
+        showAlert(err.message);
+      }
+    }
+
+    window.removeProduct = async function(productId) {
+      if (!token) return showAlert('No hay token guardado.', 'error');
+      if (!cartId) return showAlert('No hay carrito asociado.', 'error');
+      try {
+        const res = await fetch(`/api/carts/${cartId}/products/${productId}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error('Error al eliminar producto');
+        showAlert('Producto eliminado.', 'success');
+        loadCart();
+      } catch (err) {
+        showAlert(err.message);
+      }
+    }
+
+    async function purchaseCart() {
+      if (!token) return showAlert('No hay token guardado.', 'error');
+      if (!cartId) return showAlert('No hay carrito asociado.', 'error');
+      try {
+        const res = await fetch(`/api/carts/${cartId}/purchase`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error('Error al finalizar compra');
+        const data = await res.json();
+        showAlert('Compra realizada. Ticket enviado por email.', 'success');
+        loadCart();
+      } catch (err) {
+        showAlert(err.message);
+      }
+    }
+  </script>
+</body>
+</html>

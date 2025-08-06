@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🛒 Productos - Ecommerce Backend</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="./index.html">🏠 Home</a>
+      <a href="./register.html">👤 Crear Usuario</a>
+      <a href="./current.html">🔍 Current</a>
+      <a href="./users.html">🔍 Ver usuarios</a>
+      <a href="./products.html" class="active">🛒 Productos</a>
+      <a href="./cart.html">🛒 Carrito</a>
+      <a href="./tickets.html">🎟️ Tickets</a>
+      <a href="./login.html">🔐 Login</a>
+    </div>
+  </nav>
+  <div class="container">
+    <div class="card">
+      <h1>🛒 Gestión de Productos</h1>
+      <div id="alertContainer"></div>
+      <div class="products-actions">
+        <button id="getProductsBtn" class="products-button">🔄 Cargar Productos</button>
+        <button id="showCreateFormBtn" class="products-button">➕ Crear Producto</button>
+      </div>
+      <div id="createProductForm" style="display:none; margin: 20px 0;">
+        <h3>Nuevo Producto</h3>
+        <form id="productForm">
+          <input type="text" id="title" placeholder="Título" required />
+          <input type="text" id="description" placeholder="Descripción" required />
+          <input type="number" id="price" placeholder="Precio" required />
+          <input type="number" id="stock" placeholder="Stock" required />
+          <input type="text" id="category" placeholder="Categoría" required />
+          <input type="text" id="code" placeholder="Código" required />
+          <input type="text" id="thumbnails" placeholder="Thumbnails (URL, separadas por coma)" />
+          <button type="submit">Crear</button>
+          <button type="button" id="cancelCreateBtn">Cancelar</button>
+        </form>
+      </div>
+      <table id="productsTable">
+        <thead>
+          <tr>
+            <th>Título</th>
+            <th>Descripción</th>
+            <th>Precio</th>
+            <th>Stock</th>
+            <th>Categoría</th>
+            <th>Código</th>
+            <th>Thumbnails</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+  <script>
+    const token = localStorage.getItem('token');
+    const alertContainer = document.getElementById('alertContainer');
+    const productsTable = document.getElementById('productsTable').querySelector('tbody');
+    const getProductsBtn = document.getElementById('getProductsBtn');
+    const showCreateFormBtn = document.getElementById('showCreateFormBtn');
+    const createProductForm = document.getElementById('createProductForm');
+    const productForm = document.getElementById('productForm');
+    const cancelCreateBtn = document.getElementById('cancelCreateBtn');
+
+    function showAlert(message, type = 'error') {
+      const alertDiv = document.createElement('div');
+      alertDiv.className = `alert alert-${type}`;
+      alertDiv.textContent = message;
+      alertContainer.innerHTML = '';
+      alertContainer.appendChild(alertDiv);
+      setTimeout(() => { alertDiv.remove(); }, 5000);
+    }
+
+    getProductsBtn.addEventListener('click', loadProducts);
+    showCreateFormBtn.addEventListener('click', () => {
+      createProductForm.style.display = 'block';
+    });
+    cancelCreateBtn.addEventListener('click', () => {
+      createProductForm.style.display = 'none';
+      productForm.reset();
+    });
+
+    async function loadProducts() {
+      if (!token) {
+        showAlert('No hay token guardado. Por favor inicia sesión primero.', 'error');
+        setTimeout(() => { window.location.href = '/login.html'; }, 2000);
+        return;
+      }
+      try {
+        const res = await fetch('/api/products', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error('No se pudieron cargar los productos');
+        const data = await res.json();
+        productsTable.innerHTML = '';
+        data.forEach(prod => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${prod.title}</td>
+            <td>${prod.description}</td>
+            <td>${prod.price}</td>
+            <td>${prod.stock}</td>
+            <td>${prod.category}</td>
+            <td>${prod.code}</td>
+            <td>${(prod.thumbnails||[]).join(', ')}</td>
+            <td>
+              <button onclick="deleteProduct('${prod._id}')">🗑️</button>
+            </td>
+          `;
+          productsTable.appendChild(row);
+        });
+        showAlert('Productos cargados correctamente.', 'success');
+      } catch (err) {
+        showAlert(err.message);
+      }
+    }
+
+    productForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!token) return showAlert('No hay token guardado.', 'error');
+      const body = {
+        title: productForm.title.value,
+        description: productForm.description.value,
+        price: Number(productForm.price.value),
+        stock: Number(productForm.stock.value),
+        category: productForm.category.value,
+        code: productForm.code.value,
+        thumbnails: productForm.thumbnails.value.split(',').map(s => s.trim()).filter(Boolean)
+      };
+      try {
+        const res = await fetch('/api/products', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(body)
+        });
+        if (!res.ok) throw new Error('Error al crear producto');
+        showAlert('Producto creado correctamente.', 'success');
+        productForm.reset();
+        createProductForm.style.display = 'none';
+        loadProducts();
+      } catch (err) {
+        showAlert(err.message);
+      }
+    });
+
+    window.deleteProduct = async function(id) {
+      if (!token) return showAlert('No hay token guardado.', 'error');
+      if (!confirm('¿Seguro que deseas eliminar este producto?')) return;
+      try {
+        const res = await fetch(`/api/products/${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error('Error al eliminar producto');
+        showAlert('Producto eliminado.', 'success');
+        loadProducts();
+      } catch (err) {
+        showAlert(err.message);
+      }
+    }
+  </script>
+</body>
+</html>

@@ -86,8 +86,7 @@ Las vistas principales incluidas son:
 - Recuperación de contraseña vía email con token seguro y expiración, usando Nodemailer.
 - Asociación automática de carrito al momento de registro de usuario.
 - Endpoint `/api/sessions/current` protegido y que retorna un DTO seguro del usuario autenticado.
-- Documentación de pruebas: flujo de pruebas detallado en Postman (`omitir/flujo_postman.md`).
-
+ 
 ### Seguridad
 - Encriptación de contraseñas con bcrypt.
 - Uso de JWT para autenticación y autorización en endpoints protegidos.

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎟️ Tickets - Ecommerce Backend</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="./index.html">🏠 Home</a>
+      <a href="./register.html">👤 Crear Usuario</a>
+      <a href="./current.html">🔍 Current</a>
+      <a href="./users.html">🔍 Ver usuarios</a>
+      <a href="./products.html">🛒 Productos</a>
+      <a href="./cart.html">🛒 Carrito</a>
+      <a href="./tickets.html" class="active">🎟️ Tickets</a>
+      <a href="./login.html">🔐 Login</a>
+    </div>
+  </nav>
+  <div class="container">
+    <div class="card">
+      <h1>🎟️ Mis Tickets</h1>
+      <div id="alertContainer"></div>
+      <div class="tickets-actions">
+        <button id="getTicketsBtn" class="tickets-button">🔄 Cargar Tickets</button>
+      </div>
+      <table id="ticketsTable">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Monto</th>
+            <th>Fecha</th>
+            <th>Productos</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+  <script>
+    const token = localStorage.getItem('token');
+    const alertContainer = document.getElementById('alertContainer');
+    const ticketsTable = document.getElementById('ticketsTable').querySelector('tbody');
+    const getTicketsBtn = document.getElementById('getTicketsBtn');
+
+    function showAlert(message, type = 'error') {
+      const alertDiv = document.createElement('div');
+      alertDiv.className = `alert alert-${type}`;
+      alertDiv.textContent = message;
+      alertContainer.innerHTML = '';
+      alertContainer.appendChild(alertDiv);
+      setTimeout(() => { alertDiv.remove(); }, 5000);
+    }
+
+    getTicketsBtn.addEventListener('click', loadTickets);
+
+    async function loadTickets() {
+      if (!token) {
+        showAlert('No hay token guardado. Por favor inicia sesión primero.', 'error');
+        setTimeout(() => { window.location.href = '/login.html'; }, 2000);
+        return;
+      }
+      try {
+        const res = await fetch('/api/tickets', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error('No se pudieron cargar los tickets');
+        const data = await res.json();
+        ticketsTable.innerHTML = '';
+        data.forEach(ticket => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${ticket.code}</td>
+            <td>$${ticket.amount}</td>
+            <td>${new Date(ticket.createdAt).toLocaleString()}</td>
+            <td>${(ticket.products||[]).map(p => `ID: ${p.product}, Cant: ${p.quantity}`).join('<br>')}</td>
+          `;
+          ticketsTable.appendChild(row);
+        });
+        showAlert('Tickets cargados correctamente.', 'success');
+      } catch (err) {
+        showAlert(err.message);
+      }
+    }
+  </script>
+</body>
+</html>
